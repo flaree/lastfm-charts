@@ -1,1 +1,1 @@
-FastAPI + Vue site for generating lastfm charts
+Vue site for generating lastfm charts
