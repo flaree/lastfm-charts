@@ -8,14 +8,14 @@
                 <div class="md:flex items-center mt-12">
                     <div class="w-full md:w-1/2 flex flex-col">
                         <label class="font-semibold leading-none text-gray-300">LastFM Name</label>
-                        <input type="text" class="leading-none text-gray-50 p-3 focus:outline-none focus:border-blue-700 mt-4 border-0 bg-gray-800 rounded" @input="updateValue($event.target.value, 'username')" />
+                        <input type="text" class="leading-none text-gray-50 p-3 focus:outline-none focus:border-blue-700 mt-4 border-0 bg-gray-800 rounded" @input="updateValue($event, 'username')" />
                     </div>
                     
                     <div class="w-full md:w-1/2 flex flex-col md:ml-6 md:mt-0 mt-4">
                         <label class="font-semibold leading-none text-gray-300">Type</label>
                         <select 
                             class="leading-none text-gray-50 p-3 focus:outline-none focus:border-blue-700 mt-4 border-0 bg-gray-800 rounded"
-                            @input="updateValue($event.target.value, 'type')"
+                            @input="updateValue($event, 'type')"
                         >
                             <option value="recenttracks">Recent Tracks</option>
                             <option value="albums">Albums</option>
@@ -27,7 +27,7 @@
                         <label class="font-semibold leading-none text-gray-300">Data</label>
                         <select 
                             class="leading-none text-gray-50 p-3 focus:outline-none focus:border-blue-700 mt-4 border-0 bg-gray-800 rounded"
-                            @input="updateValue($event.target.value, 'datatime')"
+                            @input="updateValue($event, 'datatime')"
                         >
                             <option value="overall">Alltime</option>
                             <option value="7day">Last Week</option>
@@ -41,11 +41,11 @@
                  <div class="md:flex md:justify-center">
                      <div class="w-full md:w-1/6 flex flex-col md:mt-0 mt-4">
                         <label class="font-semibold leading-none text-gray-300">Width</label>
-                        <input value="3" type="number" class="leading-none text-gray-50 p-3 focus:outline-none focus:border-blue-700 mt-4 border-0 bg-gray-800 rounded" @input="updateValue($event.target.value, 'width')" />
+                        <input value="3" type="number" class="leading-none text-gray-50 p-3 focus:outline-none focus:border-blue-700 mt-4 border-0 bg-gray-800 rounded" @input="updateValue($event, 'width')" />
                     </div>
                     <div class="w-full md:w-1/6 flex flex-col md:ml-6 md:mt-0 mt-4">
                         <label class="font-semibold leading-none text-gray-300">Height</label>
-                        <input value="3" type="number" class="leading-none text-gray-50 p-3 focus:outline-none focus:border-blue-700 mt-4 border-0 bg-gray-800 rounded" @input="updateValue($event.target.value, 'height')" />
+                        <input value="3" type="number" class="leading-none text-gray-50 p-3 focus:outline-none focus:border-blue-700 mt-4 border-0 bg-gray-800 rounded" @input="updateValue($event, 'height')" />
                     </div>
                  </div>
 
@@ -82,8 +82,9 @@ const data = reactive({
   blob: "",
 });
 
-function updateValue(value: string, event: string) {
-  switch (event) {
+function updateValue(event: Event, type: string) {
+  const value = (event.target as HTMLInputElement).value;
+  switch (type) {
     case "username":
         data.username = value;
         break;
@@ -113,7 +114,7 @@ function submit(event: any) {
         return
     }
     data.blob = "";
-    const req = fetch(`URL/lastfm/chart/${data.username}/${data.type}/${data.datatime}?width=${data.width}&height=${data.height}`, {method: "POST", headers: {'Access-Control-Allow-Origin': '*',}})
+    const req = fetch(`https://api.pikabot.xyz/lastfm/chart/${data.username}/${data.type}/${data.datatime}?width=${data.width}&height=${data.height}`, {method: "POST", headers: {'Access-Control-Allow-Origin': '*',}})
         .then(data => data.blob()).then(blob => data.blob = URL.createObjectURL(blob)).then(() => data.displayImage = true);
     toast.info("Generating...", {position: POSITION.BOTTOM_RIGHT});
 }
