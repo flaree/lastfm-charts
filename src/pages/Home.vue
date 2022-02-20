@@ -1,5 +1,4 @@
 <template>
-
     <div class="w-full bg-gray-800 ">
     <div class="h-36"></div>
     <div class="max-w-5xl mx-auto px-6 sm:px-6 lg:px-8 mb-12">
@@ -60,7 +59,7 @@
                 </div>
             </form>
         </div>
-        <div v-if="data.alertVisible" class="hero container max-w-screen-lg mx-auto py-8 pb-10 flex">
+        <div v-if="data.displayImage" class="hero container max-w-screen-lg mx-auto py-8 pb-10 flex">
         <img :src="data.blob" class="mx-auto"/>
         </div>
     </div>
@@ -71,15 +70,16 @@
 
 <script lang="ts" setup>
 import { reactive } from "vue";
+import { useToast, POSITION } from "vue-toastification";
 
 const data = reactive({
-  alertVisible: false,
+  displayImage: false,
   datatime: "overall",
   type: "recenttracks",
   username: "",
   width: "3",
   height: "3",
-  blob: "https://c.tenor.com/I6kN-6X7nhAAAAAj/loading-buffering.gif",
+  blob: "",
 });
 
 function updateValue(value: string, event: string) {
@@ -102,10 +102,20 @@ function updateValue(value: string, event: string) {
 }
 
 function submit(event: any) {
-    const req = fetch(`URL/lastfm/chart/${data.username}/${data.type}/${data.datatime}?width=${data.width}&height=${data.height}`, {method: "POST", headers: {'Access-Control-Allow-Origin': '*',}})
-        .then(data => data.blob()).then(blob => data.blob = URL.createObjectURL(blob));
     event.preventDefault();
-    data.alertVisible = true;
+    const toast = useToast();
+    if (data.username === "") {
+        toast.error("Please enter a username");
+        return
+    }
+    if(Number(data.width) + Number(data.height) > 31) {
+        toast.error("Maximum size of width + height must be less than or equal to 31");
+        return
+    }
+    data.blob = "";
+    const req = fetch(`URL/lastfm/chart/${data.username}/${data.type}/${data.datatime}?width=${data.width}&height=${data.height}`, {method: "POST", headers: {'Access-Control-Allow-Origin': '*',}})
+        .then(data => data.blob()).then(blob => data.blob = URL.createObjectURL(blob)).then(() => data.displayImage = true);
+    toast.info("Generating...", {position: POSITION.BOTTOM_RIGHT});
 }
 
 </script>
