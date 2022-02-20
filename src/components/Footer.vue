@@ -3,11 +3,10 @@
         <div class="flex flex-wrap justify-center -mx-5 -my-5">
           <ul class="flex items-center space-x-4">
             <li><router-link to="/">Home</router-link></li>
-            <li><router-link to="/privacy">Privacy</router-link></li>
           </ul>
         <div class="px-5 py-2">
           <a
-            href="https://github.com/flaree"
+            href="https://github.com/flaree/lastfm-charts"
             rel="noopener"
             target="_blank"
           >
